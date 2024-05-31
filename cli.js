@@ -33,6 +33,7 @@ import path from 'path';
 
 const appVersion = getVersion();
 const yargs = _yargs(hideBin(process.argv));
+console.log("HEY LOOK AT ME",process.send);
 
 const options = yargs
   .version(false)
@@ -406,7 +407,19 @@ const scanInit = async argvs => {
   // Delete dataset and request queues
   await cleanUp(data.randomToken);
 
-  return getStoragePath(data.randomToken);
+  const storagePath = getStoragePath(data.randomToken);
+  if (process.env.RUNNING_FROM_PH_GUI || process.env.PURPLE_A11Y_VERBOSE){
+    let storagePathMessage = {
+      type: 'storagePath',
+      payload: `${storagePath}`
+    }
+    if (process.send){
+    process.send(JSON.stringify(storagePathMessage));
+  }
+  }
+
+
+  return storagePath;
 };
 
 scanInit(options).then(async storagePath => {
@@ -435,19 +448,15 @@ scanInit(options).then(async storagePath => {
         );
       }
 
+
       if (process.send && process.env.PURPLE_A11Y_VERBOSE && process.env.REPORT_BREAKDOWN != '1') {
         let zipFileNameMessage = {
           type: 'zipFileName',
           payload: `${constants.cliZipFileName}`
         }
 
-        process.send(JSON.stringify(zipFileNameMessage));
-       
+        process.send(JSON.stringify(zipFileNameMessage));       
       }
-      
-
-      printMessage(messageToDisplay);
-      
 
       process.exit(0);
     })
