@@ -64,6 +64,8 @@ const runScan = async answers => {
     await playwrightAxeGenerator(data);
   } else {
     await combineRun(await data, screenToScan);
+    console.log("data",data);
+    console.log("screenToScan",screenToScan);
   }
 
   // Delete cloned directory

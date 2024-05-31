@@ -259,6 +259,7 @@ Usage: node cli.js -c <crawler> -d <device> -w <viewport> -u <url> OPTIONS`,
   .epilogue('').argv;
 
 const scanInit = async argvs => {
+  console.log("argvs",argvs);
   let isNewCustomFlow = false;
   if (constants.scannerTypes[argvs.scanner] === constants.scannerTypes.custom2) {
     argvs.scanner = constants.scannerTypes.custom;
