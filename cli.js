@@ -33,7 +33,6 @@ import path from 'path';
 
 const appVersion = getVersion();
 const yargs = _yargs(hideBin(process.argv));
-console.log("HEY LOOK AT ME",process.send);
 
 const options = yargs
   .version(false)
@@ -260,7 +259,6 @@ Usage: node cli.js -c <crawler> -d <device> -w <viewport> -u <url> OPTIONS`,
   .epilogue('').argv;
 
 const scanInit = async argvs => {
-  console.log("argvs",argvs);
   let isNewCustomFlow = false;
   if (constants.scannerTypes[argvs.scanner] === constants.scannerTypes.custom2) {
     argvs.scanner = constants.scannerTypes.custom;
@@ -408,7 +406,7 @@ const scanInit = async argvs => {
   await cleanUp(data.randomToken);
 
   const storagePath = getStoragePath(data.randomToken);
-  if (process.env.RUNNING_FROM_PH_GUI || process.env.PURPLE_A11Y_VERBOSE){
+  if (process.env.ApiSever){
     let storagePathMessage = {
       type: 'storagePath',
       payload: `${storagePath}`
