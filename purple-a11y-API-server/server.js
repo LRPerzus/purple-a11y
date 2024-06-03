@@ -6,6 +6,8 @@ const rootDir = path.resolve(__dirname, '..'); // Assuming the root directory is
 const crypto = require('crypto');
 const { validate } = require('express-jsonschema');
 const { cliSchema } = require('./json_schema.js');
+const fs = require('fs');
+
 
 // Express Information
 const app = express();
@@ -21,7 +23,6 @@ function generateUniqueId(url) {
   const hash = crypto.createHash('sha256');
   hash.update(data);
   return hash.digest('hex');
-  
 }
 
 // GET requests
@@ -46,7 +47,7 @@ app.post("/",validate({ body: cliSchema }),(req,res) =>{
   let commandArgs = ['cli.js'];
 
   for (const [key, value] of Object.entries(req.body)) {
-      commandArgs.push(`-${key}`, `${value}`);
+    commandArgs.push(`-${key}`, `${value}`);
   }
 
   // Change the current working directory
@@ -91,10 +92,22 @@ app.post("/",validate({ body: cliSchema }),(req,res) =>{
         res.status(400).send(`API CALLED FAILED with Code,${code}`);
 
     } else {
-        processes[id].status = 'complete';
-        console.log(`Script finished successfully.`);
-        res.status(200).sendFile(`${storagePath}/reports/report.html`, { root: './' });;
-        // Handle successful execution
+        const filePath = path.join(storagePath, 'reports', 'report.html');
+        const rootDir = './';
+        
+        const fullPath = path.resolve(rootDir, filePath);
+        if (fs.existsSync(fullPath)) {
+          processes[id].status = 'complete';
+          console.log(`Script finished successfully.`);
+          res.status(200).sendFile(fullPath);;
+          // Handle successful execution
+        }
+        else{
+          console.log(`Script finished but no report created.`);
+          res.status(400).send("Script ran but no pages were scanned");;
+        }
+      
+        
     }
   });
 });

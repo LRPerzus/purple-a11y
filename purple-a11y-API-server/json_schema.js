@@ -3,7 +3,6 @@ exports.cliSchema = {
     properties: {
         "c": { 
             "type": "string", 
-            "const": "website",
             "enum": ["sitemap", "website"],
             "description": "Category of the item. Must be either 'sitemap' or 'website'.",
         },
@@ -22,6 +21,6 @@ exports.cliSchema = {
             "description": "Number of pages scanned",
         },
     },
-    "required": ["c", "k", "u"]
-
+    "required": ["c", "k", "u"],
+    additionalProperties: false
   };
