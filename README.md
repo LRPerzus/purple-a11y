@@ -499,6 +499,11 @@ E.g
 
 The POST will return you an ID which you can use for the GET resquest for the status of the Scan.
 
+Example Output: 
+``` 
+b00356af69f3082a52410a6a970896a2f0a61bfd9c906e8654bff4dde66dad0a
+```
+
 #### GET
 You can using the following endpoint to start a scan ``` http://localhost:8081/ ```.
 In the body of the request please send a JSON object with the ID of the scan given from POST
@@ -510,7 +515,36 @@ E.g
 }
 ```
 
-The GET will return you a status of the SCAN (running,failed). When your scan is completed it will send back the html report file to the user.
+The GET will return you a status of the SCAN (running,failed). 
+When your scan is completed it will send back the html report file as a HTML response to the user.
+
+If there is a request with an Invalid ID it will return a 404 errors with 
+``` shell
+Process not found
+```
+
+Example running or failed
+``` shell
+running
+failed
+```
+
+Example Completed Scan Output
+``` html
+<!doctype html>
+<html lang="en" id="accessibility-site-report">
+
+<head lang="en">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Accessibility Site Report</title>
+    <!-- [TESTCODE] Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-..." crossorigin="anonymous" />
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml, %3Csvg width='48' height='48' viewBox='0 0 48 48' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='24' cy='24' r='24' fill='%23785EF0'%3E%3C/circle%3E%3Cpath d='M16.2528 24.9725V23.832C16.2528 21.5526 14.4057 19.7056 12.1264 19.7056C9.84708 19.7056 8 21.5526 8 23.832V27.0721C8 29.2906 9.74991 31.0986 11.9448 31.1939V29.2806C11.9448 26.905 13.8772 24.9725 16.2528 24.9725Z' fill='white'%3E%3C/path%3E%3Cpath d='M12.308 29.28V31.1979H16.2528V25.3352C14.0779 25.3352 12.308 27.1051 12.308 29.28Z' fill='white'%3E%3C/path%3E%3Cpath d='M22.8201 25.3289H18.6937V31.1997H22.8201V25.3289Z' fill='white'%3E%3C/path%3E%3Cpath d='M22.8201 17.6016C20.5408 17.6016 18.6937 19.4486 18.6937 21.728V24.9672H22.8201V17.6016Z' fill='white'%3E%3C/path%3E%3Cpath d='M29.3876 17.6016C27.1082 17.6016 25.2612 19.4486 25.2612 21.728V24.9672H29.3876V17.6016Z' fill='white'%3E%3C/path%3E%3Cpath d='M29.3876 25.3289H25.2612V31.1997H29.3876V25.3289Z' fill='white'%3E%3C/path%3E%3Cpath d='M36.3182 31.199C38.5976 31.199 40.4446 29.3519 40.4446 27.0726V25.3281H36.3182V31.199Z' fill='white'%3E%3C/path%3E%3Cpath d='M40.4446 19.7056C38.1653 19.7056 36.3182 21.5526 36.3182 23.832V24.9644H40.4446V19.7056Z' fill='white'%3E%3C/path%3E%3Cpath d='M35.955 23.832C35.955 21.5526 34.1079 19.7056 31.8286 19.7056V22.844C31.8286 23.6195 32.0429 24.3441 32.4143 24.9644H35.955V23.832Z' fill='white'%3E%3C/path%3E%3Cpath d='M35.955 26.9709V25.3281H32.6595C33.4123 26.3261 34.6083 26.9709 35.955 26.9709Z' fill='white'%3E%3C/path%3E%3C/svg%3E" />
+    <style>
+```
 
 
 ## Report
