@@ -468,6 +468,51 @@ For example, to conduct a website scan to the URL "http://localhost:8000" and wr
 node cli.js -c 2 -o a11y-scan-results.zip -u "http://localhost:8000" -w 360
 ```
 
+### API Server
+There is a REST API server made using express.
+
+First you need to move to the folder and run the server.js
+
+```shell
+cd purple-a11y-API-server
+node server.js
+```
+
+you should see the bellow appear in the terminal
+```shell
+purple-hats-backend listening on port 8080!
+purple-hats-backend listening on port 8081!
+```
+
+#### POST
+You can using the following endpoint to start a scan ``` http://localhost:8081/ ```.
+In the body of the request please us the same characters and names as the CLI
+E.g
+```json
+{
+    "p" : 10,
+    "c" : "website",
+    "k" : "jesse:accessibility@tech.gov.sg",
+    "u" : "https://www.tech.gov.sg"
+}
+```
+
+The POST will return you an ID which you can use for the GET resquest for the status of the Scan.
+
+#### GET
+You can using the following endpoint to start a scan ``` http://localhost:8081/ ```.
+In the body of the request please send a JSON object with the ID of the scan given from POST
+E.g
+```json
+{
+  "id"  : "your-id"
+
+}
+```
+
+The GET will return you a status of the SCAN (running,failed). When your scan is completed it will send back the html report file to the user.
+
+
 ## Report
 Once a scan of the site is completed. 
 
