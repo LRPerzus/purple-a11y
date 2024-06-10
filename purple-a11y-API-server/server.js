@@ -15,6 +15,7 @@ app.use(express.json());
 
 // Constants
 const processes = {};
+let errorMessage;
 
 // Function
 function generateUniqueId(url) {
@@ -33,18 +34,40 @@ app.get("/",(req,res) =>{
 app.get("/process-status",(req,res) =>{
   const { id } = req.body;
   const processInfo = processes[id];
+  console.log("processInfo",processInfo)
 
   if (!processInfo) {
     return res.status(404).json({ message: 'Process not found' });
   }
-  console.log("processInfo.stauts",processInfo.status)
-  res.send(processInfo.status);
+
+  if (processInfo.status === "completed")
+  {
+    console.log("HEY COMPLETED?",processInfo.storagePath);
+    const filePath = path.join(processInfo.storagePath, 'reports', 'report.html');
+    const rootDir = './';
+    const fullPath = path.resolve(rootDir, filePath);
+    console.log(fullPath);
+    // Send the file
+    res.status(200).sendFile(fullPath, (err) => {
+      if (err) {
+        console.error("Error sending file:", err);
+        return res.status(500).send("Error sending file");
+      } else {
+        console.log("File sent successfully:", fullPath);
+      }
+    });
+  }
+  else{
+    console.log("processInfo.stauts",processInfo.status)
+    res.send(processInfo.status);
+  }
+
 })
 
 // Post request
 app.post("/",validate({ body: cliSchema }),(req,res) =>{
-
-  let commandArgs = ['cli.js'];
+  const ipAddress = req.ip;
+  let commandArgs = ['cli.js -t 10'];
 
   for (const [key, value] of Object.entries(req.body)) {
     commandArgs.push(`-${key}`, `${value}`);
@@ -64,16 +87,28 @@ app.post("/",validate({ body: cliSchema }),(req,res) =>{
 
   processes[id] = {
     process: childProcess,
-    status: 'running'
+    status: 'running',
+    ip: ipAddress,
   };
 
-  let storagePath;
+
   childProcess.on('message', (message) => {
     const parsedMessage = JSON.parse(message);
     if(parsedMessage.type === "storagePath")
     {
       console.log('Message from child process:', parsedMessage.payload);
       storagePath = parsedMessage.payload;
+      processes[id].storagePath = parsedMessage.payload;
+    }
+    if(parsedMessage.type === "startedScan")
+    {
+      console.log('Message from child process: Scan Started');
+      res.status(200).send(id);
+    }
+    if(parsedMessage.type === "scanErrorMessage")
+    {
+      console.log('Message from child process:', parsedMessage.payload);
+      errorMessage = parsedMessage.payload;
     }
   });
 
@@ -84,31 +119,31 @@ app.post("/",validate({ body: cliSchema }),(req,res) =>{
     res.status(400).send(`API CALLED FAILED,${error}`);
   });
 
+
   childProcess.on('close', (code) => {
     if (code !== 0) {
         console.error(`Script exited with code ${code}`);
         // Handle non-zero exit code
         processes[id].status = 'failed';
-        res.status(400).send(`API CALLED FAILED with Code,${code}`);
+        res.status(400).send(errorMessage);
 
     } else {
-        const filePath = path.join(storagePath, 'reports', 'report.html');
-        const rootDir = './';
+      const filePath = path.join(storagePath, 'reports', 'report.html');
+      const rootDir = './';
+      
+      const fullPath = path.resolve(rootDir, filePath);
         
-        const fullPath = path.resolve(rootDir, filePath);
         if (fs.existsSync(fullPath)) {
-          processes[id].status = 'complete';
+          processes[id].status = 'completed';
           console.log(`Script finished successfully.`);
-          res.status(200).sendFile(fullPath);;
           // Handle successful execution
         }
         else{
           console.log(`Script finished but no report created.`);
           res.status(400).send("Script ran but no pages were scanned");;
         }
-      
-        
     }
+
   });
 });
 

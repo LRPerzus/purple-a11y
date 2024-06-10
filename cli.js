@@ -313,16 +313,52 @@ const scanInit = async argvs => {
       break;
     case statuses.unauthorised.code:
       printMessage([statuses.unauthorised.message], messageOptions);
+      if (process.env.ApiSever){
+        let scanErrorMessage = {
+          type: 'scanErrorMessage',
+          payload: `${res.status}  ${statuses.unauthorised.message} `
+        }
+        if (process.send){
+        process.send(JSON.stringify(scanErrorMessage));
+      }
+      }
       process.exit(res.status);
     case statuses.cannotBeResolved.code:
       printMessage([statuses.cannotBeResolved.message], messageOptions);
+      if (process.env.ApiSever){
+        let scanErrorMessage = {
+          type: 'scanErrorMessage',
+          payload: `${res.status}  ${statuses.cannotBeResolved.message} `
+        }
+        if (process.send){
+        process.send(JSON.stringify(scanErrorMessage));
+      }
+      }
       process.exit(res.status);
     case statuses.systemError.code:
       printMessage([statuses.systemError.message], messageOptions);
+      if (process.env.ApiSever){
+        let scanErrorMessage = {
+          type: 'scanErrorMessage',
+          payload: `${res.status}  ${statuses.systemError.message} `
+        }
+        if (process.send){
+        process.send(JSON.stringify(scanErrorMessage));
+      }
+      }
       process.exit(res.status);
     case statuses.invalidUrl.code:
       if (argvs.scanner !== constants.scannerTypes.sitemap) {
         printMessage([statuses.invalidUrl.message], messageOptions);
+        if (process.env.ApiSever){
+          let scanErrorMessage = {
+            type: 'scanErrorMessage',
+            payload: `${res.status} ${statuses.invalidUrl.message} `
+          }
+          if (process.send){
+          process.send(JSON.stringify(scanErrorMessage));
+        }
+        }
         process.exit(res.status);
       }
       /* if sitemap scan is selected, treat this URL as a filepath
@@ -384,6 +420,16 @@ const scanInit = async argvs => {
   data.userDataDirectory = clonedDataDir;
 
   printMessage([`Purple A11y version: ${appVersion}`, 'Starting scan...'], messageOptions);
+
+  if (process.env.ApiSever){
+    let startedScan = {
+      type: 'startedScan',
+      payload: true
+    }
+    if (process.send){
+    process.send(JSON.stringify(startedScan));
+  }
+  }
 
   if (argvs.scanner === constants.scannerTypes.custom && !isNewCustomFlow) {
     try {
