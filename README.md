@@ -499,7 +499,7 @@ E.g
 
 The POST will return you an ID which you can use for the GET resquest for the status of the Scan.
 
-Example Output: 
+Example Output(string): 
 ``` 
 b00356af69f3082a52410a6a970896a2f0a61bfd9c906e8654bff4dde66dad0a
 ```
@@ -518,18 +518,18 @@ E.g
 The GET will return you a status of the SCAN (running,failed). 
 When your scan is completed it will send back the html report file as a HTML response to the user.
 
-If there is a request with an Invalid ID it will return a 404 errors with 
+If there is a request with an Invalid ID it will return a 404 errors with (string)
 ``` shell
 Process not found
 ```
 
-Example running or failed
+Example running or failed(string)
 ``` shell
 running
 failed
 ```
 
-Example Completed Scan Output
+Example Completed Scan Output(HTML response)
 ``` html
 <!doctype html>
 <html lang="en" id="accessibility-site-report">
